@@ -11,8 +11,8 @@ namespace ConsoleUI
         {
             ProductTest();
             //CategoryManager categoryManager = CategoryTest();
-            //CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
-            //categoryManager.GetById(2);
+            CategoryManager categoryManager = new CategoryManager(new EfCategoryDal());
+            categoryManager.GetById(2);
 
 
 
