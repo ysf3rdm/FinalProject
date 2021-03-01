@@ -31,7 +31,7 @@ namespace Business.Concrete
             return new Result(true,Messages.ProductAdded);
         }
 
-        public DataResult<List<Product>> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
             if (DateTime.Now.Hour == 22)
             {
@@ -59,15 +59,6 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
-
-        IDataResult<Product> IProductService.Add(Product product)
-        {
-            throw new NotImplementedException();
-        }
-
-        IDataResult<List<Product>> IProductService.GetAll()
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }
