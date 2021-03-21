@@ -23,5 +23,7 @@ namespace Business.Constans
         public static string SuccessfulLogin="başarılı giriş";
         public static string UserAlreadyExists="kullanıcı zaten var";
         public static string AccessTokenCreated="erişim oluşturuldu";
+        public static string ProductUpdated = "Nesne eklendi";
+        public static string ProductDeleted = "Nesne silindi";
     }
 }

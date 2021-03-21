@@ -3,6 +3,9 @@ using Business.BusinessAspects.Autofac;
 using Business.CCS;
 using Business.Constans;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Business;
@@ -30,6 +33,7 @@ namespace Business.Concrete
         }      
         [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             IResult result = BusinessRules.Run(CheckIfProductNameExists(product.ProductName),
@@ -44,7 +48,8 @@ namespace Business.Concrete
              return new SuccessResult(Messages.ProductAdded);      
             
         }
-
+        [PerformanceAspect(1)]
+        [CacheAspect] //key,value
         public IDataResult<List<Product>> GetAll() 
         {
             
@@ -55,7 +60,7 @@ namespace Business.Concrete
         {
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
-
+        [CacheAspect]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));  
@@ -69,6 +74,19 @@ namespace Business.Concrete
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+        [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
+        public IResult Update(Product product)
+        {
+            _productDal.Update(product);
+            return new SuccessResult(Messages.ProductUpdated);
+        }
+
+        public IResult Delete(Product product)
+        {
+            _productDal.Delete(product);
+            return new SuccessResult(Messages.ProductDeleted);
         }
 
         private IResult CheckIfCategoryCountOfCategoryCorrect(int categoryId)
@@ -97,6 +115,13 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.CategoryLimitExceded);
             }
             return new SuccessResult();
+        }
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            _productDal.Update(product);
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductUpdated);
         }
     }
 }
